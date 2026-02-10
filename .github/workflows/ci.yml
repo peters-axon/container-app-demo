@@ -1,0 +1,82 @@
+name: CI-Build
+
+on: 
+  workflow_dispatch:
+    inputs:
+      skipTests:
+        description: Skip tests?
+        default: false
+        required: true
+        type: boolean
+  push:
+  pull_request:
+  workflow_call:
+    inputs:
+      mvnArgs:
+        type: string
+        required: false
+    secrets:
+      mvnArgs:
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+
+    - name: Handle skip tests
+      if: ${{ inputs.skipTests }}
+      run: |
+        echo "SKIP_TESTS=-DskipTests" >> "$GITHUB_ENV"
+        echo "Skipping tests."
+
+    - name: Set current timestamp
+      run: echo "BUILD_TS=$(TZ=Europe/Vienna date +%Y%m%d.%H%M%S)" >> "$GITHUB_ENV"
+
+    - name: Build with Maven
+      if: ${{ true }}
+      working-directory: .
+      run: |
+        mvn clean install ${{ env.SKIP_TESTS }} --batch-mode ${{ inputs.mvnArgs }} ${{ secrets.mvnArgs }}
+
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          */target/*-reports/*.xml
+          !*/target/*-reports/failsafe-summary.xml
+          
+    - name: Collect artifacts
+      run: |
+        mv target/*.zip .
+        
+    - name: Archive build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: |
+          *.zip
+          *.jar
+
+    - name: Archive test reports
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-reports
+        retention-days: 5
+        path: |
+          */target/testEngineOut.log
+          */target/selenide/*
+          */target/ivyEngine/deploy/*/*.deploymentLog
