@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ivy-stack.ivy.fullname" . }}        {{/* ① ivy-stack.ivy.fullname */}}
+  labels:
+    {{- include "ivy-stack.labels" . | nindent 4 }}     {{/* ② ivy-stack.labels */}}
+spec:
+  replicas: {{ .Values.ivy.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ivy-stack.selectorLabels" . | nindent 6 }}   {{/* ③ ivy-stack.selectorLabels */}}
+  template:
+    metadata:
+      labels:
+        {{- include "ivy-stack.selectorLabels" . | nindent 8 }}  {{/* ③ ivy-stack.selectorLabels */}}
+    spec:
+      containers:
+        - name: ivy
+          image: "{{ .Values.ivy.image.repository }}:{{ .Values.ivy.image.tag }}"
+          imagePullPolicy: {{ .Values.ivy.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ivy.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.ivy.resources | nindent 12 }}

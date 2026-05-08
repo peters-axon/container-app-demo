@@ -1,0 +1,9 @@
+dependencies:
+- name: mssqlserver-2022
+  repository: https://simcubeltd.github.io/simcube-helm-charts/
+  version: 1.2.3
+- name: opensearch
+  repository: https://opensearch-project.github.io/helm-charts/
+  version: 3.6.0
+digest: sha256:7afa40c664198741a7cb546c49b6ba2b842c92a41918dcf497bc52398c77250a
+generated: "2026-05-08T17:04:38.8820665+02:00"

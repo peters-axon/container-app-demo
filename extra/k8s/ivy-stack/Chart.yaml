@@ -1,0 +1,17 @@
+apiVersion: v2
+name: ivy-stack
+description: Axon Ivy Engine with MS SQL Server (Developer) and OpenSearch
+type: application
+version: 0.1.0
+appVersion: "12.0.0"
+
+dependencies:
+  - name: mssqlserver-2022
+    version: "1.2.3"
+    repository: "https://simcubeltd.github.io/simcube-helm-charts/"
+    alias: mssql
+    condition: mssql.enabled
+  - name: opensearch
+    version: "3.6.0"
+    repository: "https://opensearch-project.github.io/helm-charts/"
+    condition: opensearch.enabled

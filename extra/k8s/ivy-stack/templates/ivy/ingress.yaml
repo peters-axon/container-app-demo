@@ -1,0 +1,27 @@
+{{- if .Values.ivy.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ivy-stack.ivy.fullname" . }}       {{/* ① ivy-stack.ivy.fullname */}}
+  labels:
+    {{- include "ivy-stack.labels" . | nindent 4 }}    {{/* ② ivy-stack.labels */}}
+  {{- with .Values.ivy.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ivy.ingress.className }}
+  ingressClassName: {{ .Values.ivy.ingress.className }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ivy.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ivy-stack.ivy.fullname" . }}   {{/* ① ivy-stack.ivy.fullname */}}
+                port:
+                  name: http
+{{- end }}

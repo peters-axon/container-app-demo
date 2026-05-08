@@ -1,0 +1,72 @@
+# -------------------------------------------------------
+# Axon Ivy Engine
+# -------------------------------------------------------
+ivy:
+  image:
+    repository: ghcr.io/peters-axon/container-app-demo
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  replicaCount: 3
+
+  service:
+    port: 8080
+    annotations:
+      traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+      traefik.ingress.kubernetes.io/service.sticky.cookie.name: "axonivy-sticky"
+
+  ingress:
+    enabled: true
+    className: ""
+    host: axonivy.localhost
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+
+# -------------------------------------------------------
+# MS SQL Server 2022 (Developer Edition – free for dev/test)
+# Sub-chart: simcubeltd/mssqlserver-2022 (alias: mssql)
+# -------------------------------------------------------
+mssql:
+  enabled: true
+
+  ACCEPT_EULA:
+    value: "Y"
+
+  MSSQL_PID:
+    value: Developer
+
+  sapassword: "CHANGEME"
+
+  persistence:
+    enabled: true
+    size: 8Gi
+
+# -------------------------------------------------------
+# OpenSearch (single node)
+# Sub-chart: opensearch-project/opensearch
+# -------------------------------------------------------
+opensearch:
+  enabled: true
+  singleNode: true
+  replicas: 1
+
+  persistence:
+    enabled: true
+    size: 8Gi
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1
+      memory: 2Gi

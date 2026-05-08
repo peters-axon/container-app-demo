@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ivy-stack.ivy.fullname" . }}       {{/* ① ivy-stack.ivy.fullname */}}
+  labels:
+    {{- include "ivy-stack.labels" . | nindent 4 }}    {{/* ② ivy-stack.labels */}}
+  {{- with .Values.ivy.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "ivy-stack.selectorLabels" . | nindent 4 }}  {{/* ③ ivy-stack.selectorLabels */}}
+  ports:
+    - name: http
+      port: {{ .Values.ivy.service.port }}
+      targetPort: http
+      protocol: TCP
