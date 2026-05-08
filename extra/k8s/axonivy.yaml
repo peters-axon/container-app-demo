@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: axonivy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: axonivy
+  template:
+    metadata:
+      labels:
+        app: axonivy
+    spec:
+      containers:
+      - name: axonivy
+        image: ghcr.io/peters-axon/container-app-demo:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: axonivy
+  annotations:
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"               # Sticky sessions
+    traefik.ingress.kubernetes.io/service.sticky.cookie.name: "axonivy-sticky"  # Cookie-Name
+spec:
+  selector:
+    app: axonivy
+  ports:
+  - port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: axonivy
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: axonivy.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: axonivy
+            port:
+              number: 8080

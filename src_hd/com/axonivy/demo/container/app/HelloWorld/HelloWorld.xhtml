@@ -3,16 +3,24 @@
   xmlns:ic="http://ivyteam.ch/jsf/component" xmlns:p="http://primefaces.org/ui"
   xmlns:pe="http://primefaces.org/ui/extensions">
 <h:body>
-  <ui:composition template="/layouts/basic-10.xhtml">
+  <ui:composition template="/layouts/frame-10-full-width.xhtml">
     <ui:define name="title">Hello World</ui:define>
     <ui:define name="content">
 
       <h3>Hello World!</h3>
 
       <h:form id="form">
-        <p:messages />
+        <p:growl />
+			<div class="ui-fluid">
+				<div class="grid">
+					<div class="col-12">
+						<p:inputTextarea value="#{data.ctrl.message}"/>
+					</div>
+				</div>
+			</div>
         <div class="command-btns">
-          <p:commandButton id="proceed" actionListener="#{logic.close}" value="Proceed" update="form" icon="pi pi-check" />
+          <p:commandButton id="cancel" actionListener="#{ivyWorkflowView.cancel()}" value="Cancel" icon="pi pi-times"/>
+          <p:commandButton id="update" actionListener="#{data.ctrl.update}" value="Update" update="form" icon="pi pi-refresh" />
         </div>
       </h:form>
 

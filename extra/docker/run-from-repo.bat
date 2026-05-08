@@ -1,0 +1,1 @@
+docker run --rm --name container-app-demo -p 8080:8080 ghcr.io/peters-axon/container-app-demo:latest
