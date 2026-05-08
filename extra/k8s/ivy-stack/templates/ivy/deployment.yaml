@@ -34,5 +34,49 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
+          env:
+            - name: ivy_Administrators_admin_Password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.ivy.admin.existingSecret }}
+                  key: {{ .Values.ivy.admin.passwordKey }}
+            - name: ivy_SystemDb_Url
+              value: "jdbc:sqlserver://{{ .Release.Name }}-mssql:1433;databaseName={{ .Values.ivy.db.name }}"
+            - name: ivy_SystemDb_UserName
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.ivy.db.existingSecret }}
+                  key: {{ .Values.ivy.db.usernameKey }}
+            - name: ivy_SystemDb_Password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.ivy.db.existingSecret }}
+                  key: {{ .Values.ivy.db.passwordKey }}
+            - name: ivy_SearchEngine_ExternalServer_Url
+              value: "http://{{ .Release.Name }}-opensearch-cluster-master:{{ .Values.ivy.search.port }}"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /ivy/configuration
+            - name: ivy-data
+              mountPath: /ivy/data
+            - name: ivy-applications
+              mountPath: /ivy/applications
           resources:
             {{- toYaml .Values.ivy.resources | nindent 12 }}
+      volumes:
+        - name: ivy-data
+          persistentVolumeClaim:
+            claimName: {{ include "ivy-stack.ivy.fullname" . }}-data          {{/* ① ivy-stack.ivy.fullname */}}
+        - name: ivy-applications
+          persistentVolumeClaim:
+            claimName: {{ include "ivy-stack.ivy.fullname" . }}-applications  {{/* ① ivy-stack.ivy.fullname */}}
+        - name: config-volume
+          configMap:
+            name: {{ include "ivy-stack.ivy.fullname" . }}-config              {{/* ① ivy-stack.ivy.fullname */}}
+            items:
+              - key: LICENCE
+                path: licence.lic
+              - key: JGROUPS
+                path: jgroups.xml
+              - key: LOG4J2
+                path: log4j2.xml

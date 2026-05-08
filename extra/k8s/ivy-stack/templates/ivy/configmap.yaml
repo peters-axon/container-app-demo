@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ivy-stack.ivy.fullname" . }}-config    {{/* ① ivy-stack.ivy.fullname */}}
+  labels:
+    {{- include "ivy-stack.labels" . | nindent 4 }}         {{/* ② ivy-stack.labels */}}
+data:
+  LICENCE: |
+    {{ .Values.ivy.config.licence | nindent 4 }}
+  LOG4J2: |
+    {{ .Values.ivy.config.log4j2 | nindent 4 }}
+  JGROUPS: |
+    <config xmlns="urn:org:jgroups"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/jgroups.xsd">
+      <TCP bind_addr="${jgroups.bind_addr:site_local}"
+           bind_port="${jgroups.bind_port:7800}"
+           thread_pool.min_threads="0"
+           thread_pool.max_threads="200"
+           thread_pool.keep_alive_time="30000"/>
+      <RED/>
+      <dns.DNS_PING dns_query="{{ include "ivy-stack.ivy.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local"/>
+      <MERGE3 max_interval="30s" min_interval="10s"/>
+      <FD_SOCK2/>
+      <FD_ALL3/>
+      <VERIFY_SUSPECT2 timeout="1.5s"/>
+      <BARRIER/>
+      <pbcast.NAKACK2 xmit_interval="0.5s"/>
+      <UNICAST3 xmit_interval="0.5s"/>
+      <pbcast.STABLE desired_avg_gossip="50s" max_bytes="4M"/>
+      <pbcast.GMS print_local_addr="true" join_timeout="1s"/>
+      <MFC max_credits="4M" min_threshold="0.4"/>
+      <UFC max_credits="4M" min_threshold="0.4"/>
+      <FRAG2 frag_size="60K"/>
+      <pbcast.STATE_TRANSFER/>
+    </config>

@@ -9,6 +9,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  clusterIP: None
   selector:
     {{- include "ivy-stack.selectorLabels" . | nindent 4 }}  {{/* ③ ivy-stack.selectorLabels */}}
   ports:
