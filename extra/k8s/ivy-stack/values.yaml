@@ -51,9 +51,8 @@ ivy:
 
   db:
     name: IvySystemDB
-    existingSecret: "mssql-secret"
-    usernameKey: "USER"
-    passwordKey: "PASSWORD"
+    username: sa
+    passwordKey: "sapassword"
 
   search:
     port: 9200

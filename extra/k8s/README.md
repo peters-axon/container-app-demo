@@ -27,18 +27,15 @@ A full Helm umbrella chart deploying Axon Ivy Engine in cluster mode alongside i
 
 ### Required secrets
 
-Before installing, create the following secrets in your namespace:
+Before installing, create the following secret in your namespace:
 
 ```bash
 kubectl create secret generic ivy-secret \
   --namespace ivy12 \
   --from-literal=ADMIN_PASSWORD=<your-admin-password>
-
-kubectl create secret generic mssql-secret \
-  --namespace ivy12 \
-  --from-literal=USER=sa \
-  --from-literal=PASSWORD=<your-sa-password>
 ```
+
+The MS SQL secret (`ivy12-mssql-secret`) is created automatically by Helm using the password set in `values.yaml` under `mssql.sapassword`.
 
 ### Install
 

@@ -43,14 +43,11 @@ spec:
             - name: ivy_SystemDb_Url
               value: "jdbc:sqlserver://{{ .Release.Name }}-mssql:1433;databaseName={{ .Values.ivy.db.name }}"
             - name: ivy_SystemDb_UserName
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.ivy.db.existingSecret }}
-                  key: {{ .Values.ivy.db.usernameKey }}
+              value: {{ .Values.ivy.db.username }}
             - name: ivy_SystemDb_Password
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.ivy.db.existingSecret }}
+                  name: {{ .Release.Name }}-mssql-secret
                   key: {{ .Values.ivy.db.passwordKey }}
             - name: ivy_SearchEngine_ExternalServer_Url
               value: "http://{{ .Release.Name }}-opensearch-cluster-master:{{ .Values.ivy.search.port }}"
