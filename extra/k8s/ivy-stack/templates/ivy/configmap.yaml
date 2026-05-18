@@ -1,14 +1,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "ivy-stack.ivy.fullname" . }}-config    {{/* ① ivy-stack.ivy.fullname */}}
-  labels:
-    {{- include "ivy-stack.labels" . | nindent 4 }}         {{/* ② ivy-stack.labels */}}
+  name: ivy-config
 data:
-  LICENCE: |
-    {{ .Values.ivy.config.licence | nindent 4 }}
+  LICENCE: ""
   LOG4J2: |
-    {{ .Values.ivy.config.log4j2 | nindent 4 }}
+      <Configuration>
+        <Appenders>
+          <Console name="ConsoleLog" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}" />
+            <ThresholdFilter level="debug" />
+          </Console>
+        </Appenders>
+        <Loggers>
+          <Logger name="org.jgroups" level="debug"/>
+          <Logger name="ch.ivyteam.ivy.cluster" level="debug"/>
+        </Loggers>
+      </Configuration>
   JGROUPS: |
     <config xmlns="urn:org:jgroups"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

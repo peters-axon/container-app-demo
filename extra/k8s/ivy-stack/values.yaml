@@ -29,30 +29,9 @@ ivy:
     applications:
       size: 1Gi
 
-  config:
-    licence: ""
-    log4j2: |
-      <Configuration>
-        <Appenders>
-          <Console name="ConsoleLog" target="SYSTEM_OUT">
-            <PatternLayout pattern="${pattern}" />
-            <ThresholdFilter level="debug" />
-          </Console>
-        </Appenders>
-        <Loggers>
-          <Logger name="org.jgroups" level="debug"/>
-          <Logger name="ch.ivyteam.ivy.cluster" level="debug"/>
-        </Loggers>
-      </Configuration>
-
-  admin:
-    existingSecret: "ivy-secret"
-    passwordKey: "ADMIN_PASSWORD"
-
   db:
     name: IvySystemDB
-    username: sa
-    passwordKey: "sapassword"
+    user: sa
 
   search:
     port: 9200
@@ -78,8 +57,6 @@ mssql:
   MSSQL_PID:
     value: Developer
 
-  sapassword: "CHANGEME"
-
   persistence:
     enabled: true
     size: 8Gi
@@ -104,3 +81,13 @@ opensearch:
     limits:
       cpu: 1
       memory: 2Gi
+
+  extraEnvs:
+    - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: ivy12-opensearch-secret
+          key: admin-password
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+  

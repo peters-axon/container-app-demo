@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ivy-stack.ivy.fullname" . }}        {{/* ① ivy-stack.ivy.fullname */}}
-  labels:
-    {{- include "ivy-stack.labels" . | nindent 4 }}     {{/* ② ivy-stack.labels */}}
+  name: ivy-stack
 spec:
   replicas: {{ .Values.ivy.replicaCount }}
   selector:
@@ -38,17 +36,17 @@ spec:
             - name: ivy_Administrators_admin_Password
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.ivy.admin.existingSecret }}
-                  key: {{ .Values.ivy.admin.passwordKey }}
+                  name: ivy12-ivy-secret
+                  key: admin-password
             - name: ivy_SystemDb_Url
               value: "jdbc:sqlserver://{{ .Release.Name }}-mssql:1433;databaseName={{ .Values.ivy.db.name }}"
             - name: ivy_SystemDb_UserName
-              value: {{ .Values.ivy.db.username }}
+              value: {{ .Values.ivy.db.user }}
             - name: ivy_SystemDb_Password
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-mssql-secret
-                  key: {{ .Values.ivy.db.passwordKey }}
+                  name: ivy12-mssql-secret
+                  key: sapassword
             - name: ivy_SearchEngine_ExternalServer_Url
               value: "http://{{ .Release.Name }}-opensearch-cluster-master:{{ .Values.ivy.search.port }}"
           volumeMounts:
